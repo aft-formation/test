@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: todo-mysql
+  labels:
+    app: todo-mysql
+spec:
+  serviceName: "todo-mysql"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-mysql
+  template:
+    metadata:
+      labels:
+        app: todo-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:latest
+        ports:
+        - containerPort: 3306
+          name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "password"
+        - name: MYSQL_DATABASE
+          value: "todo_db"
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-persistent-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi

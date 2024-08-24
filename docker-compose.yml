@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_USERNAME=root
+      - DB_PASSWORD=password
+      - DB_DATABASE=todo_db
+      - DB_HOST=todo-mysql
+      - PORT=3000
+    depends_on:
+      - todo-mysql
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5000:5000"
+    environment:
+      - VITE_API_URL=http://backend:3000/api  # Changer l'URL de l'API pour le frontend
+    depends_on:
+      - backend
+
+  todo-mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: todo_db
+    ports:
+      - "3306:3306"
